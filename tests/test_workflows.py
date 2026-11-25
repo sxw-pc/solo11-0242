@@ -31,6 +31,7 @@ class ImageCourtTests(unittest.TestCase):
         self.assertEqual([x['decision'] for x in r],['registered','signer_out_of_scope','incomplete_sbom'])
     def test_risk_exception_scope_and_expiry(self):
         self.ready()
+        self.step('channel',op='window',environment='prod',start=10,expires=30,generation=1)
         self.step('provenance',op='risk',id='severe',digest='sha256:aaa',severity=9,revision=1)
         self.assertEqual(self.step('channel',op='propose',id='p-prod',digest='sha256:aaa',environment='prod',at=15)['decision'],'untrusted_candidate')
         self.assertEqual(self.step('channel',op='exception',id='e',digest='sha256:aaa',environment='prod',role1='security',role2='owner',expires=20,at=15)['decision'],'approved')
@@ -47,6 +48,7 @@ class ImageCourtTests(unittest.TestCase):
         self.assertEqual(self.step('admission',op='renew',id='lease-1',at=20,expires=60)['decision'],'renewed')
     def test_revocation_crosses_all_three_subsystems(self):
         self.ready();self.fixture('admission','admission_normal.json')
+        self.step('channel',op='window',environment='prod',start=10,expires=30,generation=1)
         r=self.step('provenance',op='revoke',id='revoke-1',digest='sha256:aaa',generation=2)
         self.assertEqual(r['decision'],'revoked')
         self.assertEqual(self.step('admission',op='renew',id='lease-1',at=20,expires=70)['decision'],'lease_unavailable')
@@ -61,6 +63,7 @@ class ImageCourtTests(unittest.TestCase):
         self.assertEqual(self.step('admission',op='review',environment='stage')['decision'],'clear')
     def test_pending_promotion_rechecks_upstream_after_revoke(self):
         self.ready()
+        self.step('channel',op='window',environment='prod',start=10,expires=30,generation=1)
         self.assertEqual(self.step('channel',op='propose',id='p-prod',digest='sha256:aaa',environment='prod',parent_environment='stage',at=20)['decision'],'pending')
         self.step('provenance',op='revoke',id='rev',digest='sha256:aaa',generation=2)
         self.assertEqual(self.step('channel',op='publish',id='p-prod',at=21)['decision'],'candidate_invalidated')

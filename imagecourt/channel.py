@@ -9,6 +9,13 @@ def candidate_ok(db,digest,environment,at):
 
 def run(db,x):
     op=x['op']
+    if op=='window':
+        old=one(db,'SELECT * FROM channel_windows WHERE environment=?',(x['environment'],))
+        if x['start']>=x['expires'] or (old and x['generation']<=old['generation']):
+            return {'decision':'invalid_window_version'}
+        db.execute('INSERT INTO channel_windows VALUES(?,?,?,?) ON CONFLICT(environment) DO UPDATE SET start=excluded.start,expires=excluded.expires,generation=excluded.generation',
+                   (x['environment'],x['start'],x['expires'],x['generation']))
+        return {'decision':'window_recorded'}
     if op=='exception':
         if x['role1']==x['role2'] or x['expires']<=x['at']:return {'decision':'invalid_approval'}
         old=one(db,'SELECT * FROM exceptions WHERE id=?',(x['id'],))
@@ -19,6 +26,10 @@ def run(db,x):
         db.execute('UPDATE exceptions SET revoked=1 WHERE id=?',(x['id'],))
         return {'decision':'revoked'}
     if op=='propose':
+        if x['environment']=='prod':
+            window=one(db,'SELECT * FROM channel_windows WHERE environment=?',(x['environment'],))
+            if not window or not window['start']<=x['at']<window['expires']:
+                return {'decision':'outside_production_window'}
         if not candidate_ok(db,x['digest'],x['environment'],x['at']):return {'decision':'untrusted_candidate'}
         if x.get('parent_environment'):
             parent=one(db,"SELECT * FROM channels WHERE environment=? AND status='active'",(x['parent_environment'],))
@@ -33,6 +44,10 @@ def run(db,x):
     if op=='publish':
         p=one(db,'SELECT * FROM promotions WHERE id=?',(x['id'],))
         if not p or p['status']!='pending':return {'decision':'no_pending_promotion'}
+        if p['environment']=='prod':
+            window=one(db,'SELECT * FROM channel_windows WHERE environment=?',(p['environment'],))
+            if not window or not window['start']<=x['at']<window['expires']:
+                return {'decision':'outside_production_window'}
         if not candidate_ok(db,p['digest'],p['environment'],x['at']):return {'decision':'candidate_invalidated'}
         if p['parent_environment']:
             parent=one(db,"SELECT * FROM channels WHERE environment=? AND status='active'",(p['parent_environment'],))
