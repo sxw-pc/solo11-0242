@@ -13,6 +13,7 @@ def run(db,x):
         c=one(db,"SELECT * FROM channels WHERE environment=? AND status='active'",(w['environment'],)) if w else None
         if not w or w['generation']!=x['generation'] or not c or c['digest']!=w['digest'] or c['generation']!=x['channel_generation']:
             return {'decision':'identity_or_channel_mismatch'}
+        if w['status']!='registered':return {'decision':'workload_not_admissible'}
         if not candidate_ok(db,w['digest'],w['environment'],x['at']):return {'decision':'source_invalidated'}
         old=one(db,'SELECT * FROM leases WHERE id=?',(x['id'],))
         if old:return {'decision':'reused' if old['workload']==x['workload'] else 'lease_identity_conflict'}
@@ -20,6 +21,12 @@ def run(db,x):
         db.execute('INSERT INTO leases VALUES(?,?,?,?,?,?)',(x['id'],w['id'],w['digest'],c['generation'],x['expires'],'active'))
         db.execute("UPDATE workloads SET status='running' WHERE id=?",(w['id'],))
         return {'decision':'admitted'}
+    if op=='expire':
+        lease=one(db,'SELECT * FROM leases WHERE id=?',(x['id'],))
+        if not lease or x['at']<=lease['expires']:return {'decision':'not_expired'}
+        db.execute("UPDATE leases SET status='expired' WHERE id=?",(x['id'],))
+        db.execute("UPDATE workloads SET status='registered' WHERE id=? AND status='running'",(lease['workload'],))
+        return {'decision':'expired'}
     if op=='renew':
         lease=one(db,'SELECT * FROM leases WHERE id=?',(x['id'],))
         if not lease or lease['status']!='active':return {'decision':'lease_unavailable'}

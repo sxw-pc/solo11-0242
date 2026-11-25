@@ -17,7 +17,8 @@ def run(db,x):
                    (x['environment'],x['start'],x['expires'],x['generation']))
         return {'decision':'window_recorded'}
     if op=='exception':
-        if x['role1']==x['role2'] or x['expires']<=x['at']:return {'decision':'invalid_approval'}
+        if {x['role1'],x['role2']}!={'security','owner'} or x['expires']<=x['at']:
+            return {'decision':'invalid_approval'}
         old=one(db,'SELECT * FROM exceptions WHERE id=?',(x['id'],))
         if old:return {'decision':'reused' if old['digest']==x['digest'] else 'exception_conflict'}
         db.execute('INSERT INTO exceptions VALUES(?,?,?,?,?,?,0)',(x['id'],x['digest'],x['environment'],x['role1'],x['role2'],x['expires']))

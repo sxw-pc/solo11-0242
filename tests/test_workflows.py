@@ -71,6 +71,10 @@ class ImageCourtTests(unittest.TestCase):
         self.ready();self.fixture('admission','admission_normal.json')
         self.assertEqual(self.step('channel',op='propose',id='skip',digest='sha256:aaa',environment='prod',parent_environment='dev',at=20)['decision'],'invalid_promotion_order')
         self.assertEqual(self.step('channel',op='withdraw',environment='dev',at=21)['decision'],'no_trusted_fallback')
+    def test_isolated_workload_cannot_get_fresh_lease(self):
+        self.ready();self.fixture('admission','admission_normal.json')
+        self.step('admission',op='isolate',id='lease-1')
+        self.assertEqual(self.step('admission',op='admit',id='lease-2',workload='web-1',generation=1,channel_generation=1,at=20,expires=60)['decision'],'workload_not_admissible')
     def test_fixture_replay_and_rows(self):
         for sub,name in [('provenance','provenance_normal.json'),('channel','channel_normal.json'),('admission','admission_normal.json'),('provenance','provenance_failure.json'),('channel','channel_failure.json'),('admission','admission_failure.json')]:self.fixture(sub,name)
         self.assertEqual(self.step('admission',op='review',environment='stage')['decision'],'blocked')
