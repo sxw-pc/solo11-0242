@@ -75,6 +75,23 @@ class ImageCourtTests(unittest.TestCase):
         self.ready();self.fixture('admission','admission_normal.json')
         self.step('admission',op='isolate',id='lease-1')
         self.assertEqual(self.step('admission',op='admit',id='lease-2',workload='web-1',generation=1,channel_generation=1,at=20,expires=60)['decision'],'workload_not_admissible')
+    def test_channel_withdraw_selects_trusted_history_without_cross_environment_block(self):
+        self.ready();self.fixture('admission','admission_normal.json')
+        self.step('provenance',op='manifest',digest='sha256:bbb',tag='web:2',batch='b2',generation=1)
+        self.step('provenance',op='attest',id='att-b',digest='sha256:bbb',batch='b2',signer='builder-a',source='repo-a',recipe='r1',expected_recipe='r1',generation=1)
+        self.step('provenance',op='sbom',digest='sha256:bbb',components=['lib-a'],revision=1)
+        self.step('channel',op='propose',id='p-dev-b',digest='sha256:bbb',environment='dev',at=20)
+        self.step('channel',op='publish',id='p-dev-b',at=21)
+        self.step('channel',op='propose',id='p-stage-b',digest='sha256:bbb',environment='stage',parent_environment='dev',at=22)
+        self.step('channel',op='publish',id='p-stage-b',at=23)
+        self.assertEqual(self.step('channel',op='withdraw',environment='stage',at=24),{'decision':'rolled_back','digest':'sha256:aaa'})
+    def test_production_window_requires_current_generation(self):
+        self.ready()
+        self.assertEqual(self.step('channel',op='propose',id='p',digest='sha256:aaa',environment='prod',parent_environment='stage',at=15)['decision'],'outside_production_window')
+        self.step('channel',op='window',environment='prod',start=10,expires=20,generation=1)
+        self.assertEqual(self.step('channel',op='window',environment='prod',start=10,expires=99,generation=1)['decision'],'invalid_window_version')
+        self.assertEqual(self.step('channel',op='propose',id='p',digest='sha256:aaa',environment='prod',parent_environment='stage',at=15)['decision'],'pending')
+        self.assertEqual(self.step('channel',op='publish',id='p',at=21)['decision'],'outside_production_window')
     def test_fixture_replay_and_rows(self):
         for sub,name in [('provenance','provenance_normal.json'),('channel','channel_normal.json'),('admission','admission_normal.json'),('provenance','provenance_failure.json'),('channel','channel_failure.json'),('admission','admission_failure.json')]:self.fixture(sub,name)
         self.assertEqual(self.step('admission',op='review',environment='stage')['decision'],'blocked')
