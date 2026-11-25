@@ -1,0 +1,5 @@
+[
+ {"op":"admit","id":"bad-lease","workload":"web-1","generation":0,"channel_generation":1,"at":15,"expires":50},
+ {"op":"orphan","id":"orphan-1","environment":"stage","digest":"sha256:aaa"},
+ {"op":"review","environment":"stage"}
+]

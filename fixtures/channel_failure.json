@@ -1,0 +1,4 @@
+[
+ {"op":"propose","id":"p-bad","digest":"sha256:bbb","environment":"prod","at":14},
+ {"op":"exception","id":"ex-bad","digest":"sha256:bbb","environment":"prod","role1":"same","role2":"same","expires":50,"at":14}
+]

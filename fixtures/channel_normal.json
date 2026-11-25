@@ -1,0 +1,6 @@
+[
+ {"op":"propose","id":"p-dev","digest":"sha256:aaa","environment":"dev","at":10},
+ {"op":"publish","id":"p-dev","at":11},
+ {"op":"propose","id":"p-stage","digest":"sha256:aaa","environment":"stage","parent_environment":"dev","at":12},
+ {"op":"publish","id":"p-stage","at":13}
+]

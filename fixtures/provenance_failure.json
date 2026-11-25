@@ -1,0 +1,5 @@
+[
+ {"op":"manifest","digest":"sha256:bbb","tag":"web:2","batch":"b2","generation":1},
+ {"op":"attest","id":"bad-att","digest":"sha256:bbb","batch":"b2","signer":"unknown","source":"repo-a","recipe":"r1","expected_recipe":"r1","generation":1},
+ {"op":"sbom","digest":"sha256:bbb","components":[],"revision":1}
+]

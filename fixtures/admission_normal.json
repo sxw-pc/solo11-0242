@@ -1,0 +1,5 @@
+[
+ {"op":"workload","id":"web-1","environment":"stage","digest":"sha256:aaa","generation":1},
+ {"op":"admit","id":"lease-1","workload":"web-1","generation":1,"channel_generation":1,"at":14,"expires":50},
+ {"op":"review","environment":"stage"}
+]

@@ -1,0 +1,7 @@
+[
+ {"op":"scope","signer":"builder-a","source":"repo-a"},
+ {"op":"manifest","digest":"sha256:aaa","tag":"web:1","batch":"b1","generation":1},
+ {"op":"attest","id":"att-a","digest":"sha256:aaa","batch":"b1","signer":"builder-a","source":"repo-a","recipe":"r1","expected_recipe":"r1","generation":1},
+ {"op":"sbom","digest":"sha256:aaa","components":["lib-a","lib-b"],"revision":1},
+ {"op":"risk","id":"risk-a","digest":"sha256:aaa","severity":2,"revision":1}
+]
