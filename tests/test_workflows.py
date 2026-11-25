@@ -33,9 +33,9 @@ class ImageCourtTests(unittest.TestCase):
         self.ready()
         self.step('channel',op='window',environment='prod',start=10,expires=30,generation=1)
         self.step('provenance',op='risk',id='severe',digest='sha256:aaa',severity=9,revision=1)
-        self.assertEqual(self.step('channel',op='propose',id='p-prod',digest='sha256:aaa',environment='prod',at=15)['decision'],'untrusted_candidate')
+        self.assertEqual(self.step('channel',op='propose',id='p-prod',digest='sha256:aaa',environment='prod',parent_environment='stage',at=15)['decision'],'untrusted_candidate')
         self.assertEqual(self.step('channel',op='exception',id='e',digest='sha256:aaa',environment='prod',role1='security',role2='owner',expires=20,at=15)['decision'],'approved')
-        self.assertEqual(self.step('channel',op='propose',id='p-prod',digest='sha256:aaa',environment='prod',at=16)['decision'],'pending')
+        self.assertEqual(self.step('channel',op='propose',id='p-prod',digest='sha256:aaa',environment='prod',parent_environment='stage',at=16)['decision'],'pending')
         self.assertEqual(self.step('channel',op='publish',id='p-prod',at=21)['decision'],'candidate_invalidated')
     def test_competing_promotion_and_upstream(self):
         self.fixture('provenance','provenance_normal.json')
@@ -52,7 +52,7 @@ class ImageCourtTests(unittest.TestCase):
         r=self.step('provenance',op='revoke',id='revoke-1',digest='sha256:aaa',generation=2)
         self.assertEqual(r['decision'],'revoked')
         self.assertEqual(self.step('admission',op='renew',id='lease-1',at=20,expires=70)['decision'],'lease_unavailable')
-        self.assertEqual(self.step('channel',op='propose',id='new',digest='sha256:aaa',environment='prod',at=20)['decision'],'untrusted_candidate')
+        self.assertEqual(self.step('channel',op='propose',id='new',digest='sha256:aaa',environment='prod',parent_environment='stage',at=20)['decision'],'untrusted_candidate')
         self.assertEqual(replay(str(self.path))['verified'],True)
     def test_orphan_blocks_withdrawal(self):
         self.ready();self.fixture('admission','admission_normal.json')
@@ -67,6 +67,10 @@ class ImageCourtTests(unittest.TestCase):
         self.assertEqual(self.step('channel',op='propose',id='p-prod',digest='sha256:aaa',environment='prod',parent_environment='stage',at=20)['decision'],'pending')
         self.step('provenance',op='revoke',id='rev',digest='sha256:aaa',generation=2)
         self.assertEqual(self.step('channel',op='publish',id='p-prod',at=21)['decision'],'candidate_invalidated')
+    def test_environment_order_and_unrelated_lease_isolation(self):
+        self.ready();self.fixture('admission','admission_normal.json')
+        self.assertEqual(self.step('channel',op='propose',id='skip',digest='sha256:aaa',environment='prod',parent_environment='dev',at=20)['decision'],'invalid_promotion_order')
+        self.assertEqual(self.step('channel',op='withdraw',environment='dev',at=21)['decision'],'no_trusted_fallback')
     def test_fixture_replay_and_rows(self):
         for sub,name in [('provenance','provenance_normal.json'),('channel','channel_normal.json'),('admission','admission_normal.json'),('provenance','provenance_failure.json'),('channel','channel_failure.json'),('admission','admission_failure.json')]:self.fixture(sub,name)
         self.assertEqual(self.step('admission',op='review',environment='stage')['decision'],'blocked')

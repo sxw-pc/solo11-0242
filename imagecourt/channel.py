@@ -26,6 +26,9 @@ def run(db,x):
         db.execute('UPDATE exceptions SET revoked=1 WHERE id=?',(x['id'],))
         return {'decision':'revoked'}
     if op=='propose':
+        required_parent={'dev':None,'stage':'dev','prod':'stage'}
+        if x['environment'] not in required_parent or x.get('parent_environment')!=required_parent[x['environment']]:
+            return {'decision':'invalid_promotion_order'}
         if x['environment']=='prod':
             window=one(db,'SELECT * FROM channel_windows WHERE environment=?',(x['environment'],))
             if not window or not window['start']<=x['at']<window['expires']:
@@ -62,7 +65,8 @@ def run(db,x):
     if op=='withdraw':
         current=one(db,'SELECT * FROM channels WHERE environment=?',(x['environment'],))
         if not current:return {'decision':'no_channel'}
-        blockers=rows(db,"SELECT id FROM leases WHERE digest=? AND status IN ('active','risk')",(current['digest'],))
+        blockers=rows(db,"""SELECT l.id FROM leases l JOIN workloads w ON w.id=l.workload
+            WHERE l.digest=? AND w.environment=? AND l.status IN ('active','risk')""",(current['digest'],x['environment']))
         blockers+=rows(db,"SELECT id FROM orphans WHERE environment=? AND digest=? AND status='unresolved'",(x['environment'],current['digest']))
         if blockers:return {'decision':'dependent_runtime','ids':[b['id'] for b in blockers]}
         historical=rows(db,'SELECT * FROM channel_history WHERE environment=? AND generation<? ORDER BY generation DESC',(x['environment'],current['generation']))
