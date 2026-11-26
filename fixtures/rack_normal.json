@@ -1,0 +1,3 @@
+[
+  {"op":"rack","id":"rack-a","zone":"zone-a","mass":5,"function":"mirror"}
+]

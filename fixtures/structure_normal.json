@@ -1,0 +1,5 @@
+[
+  {"op":"zone","id":"zone-a","site":"site-a","load_limit":10,"revision":1},
+  {"op":"sample","id":"quake-a","zone":"zone-a","sensor":"accel-a","at":2,"acceleration":8},
+  {"op":"inspect","id":"inspection-a","zone":"zone-a","engineer":"engineer-a","at":3,"threshold":5}
+]
