@@ -17,6 +17,14 @@ CREATE TABLE IF NOT EXISTS leases(id TEXT PRIMARY KEY,workload TEXT,digest TEXT,
 CREATE TABLE IF NOT EXISTS orphans(id TEXT PRIMARY KEY,environment TEXT,digest TEXT,status TEXT);
 CREATE TABLE IF NOT EXISTS revocations(id TEXT PRIMARY KEY,digest TEXT,generation INTEGER,status TEXT);
 CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY AUTOINCREMENT,subsystem TEXT,payload TEXT,result TEXT);
+CREATE TABLE IF NOT EXISTS contracts(id TEXT PRIMARY KEY,customer TEXT,escrow_account TEXT,underwriter TEXT);
+CREATE TABLE IF NOT EXISTS binary_aliases(name TEXT PRIMARY KEY,binary TEXT);
+CREATE TABLE IF NOT EXISTS rights_credentials(id TEXT PRIMARY KEY,binary TEXT,holder TEXT,beneficiary TEXT,license_version TEXT,rate INTEGER,chain TEXT,territory TEXT,signed_at INTEGER,registered_at INTEGER,effective_from INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS deliveries(id TEXT PRIMARY KEY,contract TEXT,customer TEXT,digest TEXT,territory TEXT,delivered_at INTEGER,components TEXT,confirmation TEXT);
+CREATE TABLE IF NOT EXISTS obligations(id TEXT PRIMARY KEY,contract TEXT,customer TEXT,binary TEXT,digest TEXT,territory TEXT,delivered_at INTEGER,credential TEXT,license_version TEXT,amount INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS disputes(id TEXT PRIMARY KEY,obligation TEXT,claimant TEXT,credential TEXT,mode TEXT,underwriter TEXT,advance_recipient TEXT,status TEXT,winner TEXT,resolved_by TEXT);
+CREATE TABLE IF NOT EXISTS corrections(id TEXT PRIMARY KEY,obligation TEXT,credential TEXT,amount INTEGER,at INTEGER);
+CREATE TABLE IF NOT EXISTS ledger(id TEXT PRIMARY KEY,op TEXT,kind TEXT,account TEXT,obligation TEXT,amount INTEGER,at INTEGER);
 """
 
 def connect(path):
@@ -44,8 +52,8 @@ def rows(db,sql,args=()):
     return [dict(x) for x in db.execute(sql,args)]
 
 def execute(db,subsystem,payload):
-    from . import provenance,channel,admission
-    fn={'provenance':provenance.run,'channel':channel.run,'admission':admission.run}[subsystem]
+    from . import provenance,channel,admission,royalty_settlement
+    fn={'provenance':provenance.run,'channel':channel.run,'admission':admission.run,'settlement':royalty_settlement.run}[subsystem]
     with tx(db):
         result=fn(db,payload)
         db.execute('INSERT INTO events(subsystem,payload,result) VALUES(?,?,?)',
