@@ -1,0 +1,5 @@
+[
+  {"op":"copy","id":"copy-a","digest":"sha256:aaa","tenant":"tenant-a","site":"site-a","payload":"synthetic-client-byte"},
+  {"op":"hold","id":"hold-a","tenant":"tenant-a","digest":"sha256:aaa","scope":"case-a"},
+  {"op":"erase","id":"erase-a","tenant":"tenant-a","digest":"sha256:aaa","at":5}
+]

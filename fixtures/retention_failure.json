@@ -1,0 +1,3 @@
+[
+  {"op":"copy","id":"bad-copy","digest":"sha256:missing","tenant":"tenant-a","site":"site-a","payload":"synthetic-client-byte"}
+]
