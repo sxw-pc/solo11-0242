@@ -44,8 +44,9 @@ def rows(db,sql,args=()):
     return [dict(x) for x in db.execute(sql,args)]
 
 def execute(db,subsystem,payload):
-    from . import provenance,channel,admission
-    fn={'provenance':provenance.run,'channel':channel.run,'admission':admission.run}[subsystem]
+    from . import provenance,channel,admission,customer_fulfillment
+    fn={'provenance':provenance.run,'channel':channel.run,'admission':admission.run,
+        'customer_fulfillment':customer_fulfillment.run,'fulfillment':customer_fulfillment.run}[subsystem]
     with tx(db):
         result=fn(db,payload)
         db.execute('INSERT INTO events(subsystem,payload,result) VALUES(?,?,?)',
