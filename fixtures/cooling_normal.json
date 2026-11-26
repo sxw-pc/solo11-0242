@@ -1,0 +1,6 @@
+[
+  {"op":"loop","id":"loop-a","site":"site-a","flow_limit":100,"temp_limit":30},
+  {"op":"sample","id":"sample-a","loop":"loop-a","point":"outfall","at":5,"flow":10,"temperature":25},
+  {"op":"build","id":"build-a","batch":"b1","digest":"sha256:aaa","loop":"loop-a","starts":1,"ends":10},
+  {"op":"report","id":"report-a","loop":"loop-a","period":"2026-11"}
+]

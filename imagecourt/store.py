@@ -17,6 +17,10 @@ CREATE TABLE IF NOT EXISTS leases(id TEXT PRIMARY KEY,workload TEXT,digest TEXT,
 CREATE TABLE IF NOT EXISTS orphans(id TEXT PRIMARY KEY,environment TEXT,digest TEXT,status TEXT);
 CREATE TABLE IF NOT EXISTS revocations(id TEXT PRIMARY KEY,digest TEXT,generation INTEGER,status TEXT);
 CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY AUTOINCREMENT,subsystem TEXT,payload TEXT,result TEXT);
+CREATE TABLE IF NOT EXISTS cooling_loops(id TEXT PRIMARY KEY,site TEXT,flow_limit INTEGER,temp_limit INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS water_samples(id TEXT PRIMARY KEY,loop TEXT,point TEXT,at INTEGER,flow INTEGER,temperature INTEGER);
+CREATE TABLE IF NOT EXISTS cooling_builds(id TEXT PRIMARY KEY,batch TEXT,loop TEXT,starts INTEGER,ends INTEGER);
+CREATE TABLE IF NOT EXISTS water_reports(id TEXT PRIMARY KEY,loop TEXT,period TEXT,volume INTEGER,status TEXT);
 """
 
 def connect(path):
@@ -44,8 +48,8 @@ def rows(db,sql,args=()):
     return [dict(x) for x in db.execute(sql,args)]
 
 def execute(db,subsystem,payload):
-    from . import provenance,channel,admission
-    fn={'provenance':provenance.run,'channel':channel.run,'admission':admission.run}[subsystem]
+    from . import provenance,channel,admission,cooling
+    fn={'provenance':provenance.run,'channel':channel.run,'admission':admission.run,'cooling':cooling.run}[subsystem]
     with tx(db):
         result=fn(db,payload)
         db.execute('INSERT INTO events(subsystem,payload,result) VALUES(?,?,?)',
