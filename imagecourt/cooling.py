@@ -22,6 +22,13 @@ def run(db, x):
         db.execute('INSERT INTO cooling_builds VALUES(?,?,?,?,?)',
                    (x['id'], x['batch'], x['loop'], x['starts'], x['ends']))
         return {'decision': 'build_linked'}
+    if x['op'] == 'valve':
+        loop = one(db, 'SELECT * FROM cooling_loops WHERE id=?', (x['loop'],))
+        if not loop:
+            return {'decision': 'loop_missing'}
+        db.execute('INSERT INTO valve_intents VALUES(?,?,?,?,?)',
+                   (x['id'], x['loop'], x['position'], x['at'], 'sent'))
+        return {'decision': 'valve_command_sent'}
     if x['op'] == 'report':
         loop = one(db, 'SELECT * FROM cooling_loops WHERE id=?', (x['loop'],))
         if not loop:

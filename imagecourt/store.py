@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS cooling_loops(id TEXT PRIMARY KEY,site TEXT,flow_limi
 CREATE TABLE IF NOT EXISTS water_samples(id TEXT PRIMARY KEY,loop TEXT,point TEXT,at INTEGER,flow INTEGER,temperature INTEGER);
 CREATE TABLE IF NOT EXISTS cooling_builds(id TEXT PRIMARY KEY,batch TEXT,loop TEXT,starts INTEGER,ends INTEGER);
 CREATE TABLE IF NOT EXISTS water_reports(id TEXT PRIMARY KEY,loop TEXT,period TEXT,volume INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS valve_intents(id TEXT PRIMARY KEY,loop TEXT,position TEXT,at INTEGER,status TEXT);
 """
 
 def connect(path):
