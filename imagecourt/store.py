@@ -17,6 +17,11 @@ CREATE TABLE IF NOT EXISTS leases(id TEXT PRIMARY KEY,workload TEXT,digest TEXT,
 CREATE TABLE IF NOT EXISTS orphans(id TEXT PRIMARY KEY,environment TEXT,digest TEXT,status TEXT);
 CREATE TABLE IF NOT EXISTS revocations(id TEXT PRIMARY KEY,digest TEXT,generation INTEGER,status TEXT);
 CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY AUTOINCREMENT,subsystem TEXT,payload TEXT,result TEXT);
+CREATE TABLE IF NOT EXISTS rack_feeds(rack TEXT,feed TEXT,breaker TEXT,PRIMARY KEY(rack,feed));
+CREATE TABLE IF NOT EXISTS rack_workloads(rack TEXT,workload TEXT,PRIMARY KEY(rack,workload));
+CREATE TABLE IF NOT EXISTS breaker_commands(id TEXT PRIMARY KEY,breaker TEXT,action TEXT,ack TEXT);
+CREATE TABLE IF NOT EXISTS voltage_samples(id TEXT PRIMARY KEY,breaker TEXT,source TEXT,volts INTEGER,at INTEGER);
+CREATE TABLE IF NOT EXISTS electrical_permits(id TEXT PRIMARY KEY,rack TEXT,status TEXT,issued_at INTEGER);
 """
 
 def connect(path):
@@ -44,8 +49,9 @@ def rows(db,sql,args=()):
     return [dict(x) for x in db.execute(sql,args)]
 
 def execute(db,subsystem,payload):
-    from . import provenance,channel,admission
-    fn={'provenance':provenance.run,'channel':channel.run,'admission':admission.run}[subsystem]
+    from . import provenance,channel,admission,electrical_control,power_meter
+    fn={'provenance':provenance.run,'channel':channel.run,'admission':admission.run,
+        'electrical':electrical_control.run,'meter':power_meter.run}[subsystem]
     with tx(db):
         result=fn(db,payload)
         db.execute('INSERT INTO events(subsystem,payload,result) VALUES(?,?,?)',
