@@ -1,0 +1,5 @@
+[
+  {"op":"source","id":"clock-a","operator":"time-a","offset_min":-2,"offset_max":2},
+  {"op":"stamp","id":"stamp-a","event_key":"publish-a","source":"clock-a","local_at":10,"claimed_utc":11},
+  {"op":"certificate","id":"cert-a","event_key":"publish-a"}
+]

@@ -1,0 +1,4 @@
+[
+  {"op":"stamp","id":"bad-stamp","event_key":"publish-b","source":"missing","local_at":10,"claimed_utc":11},
+  {"op":"certificate","id":"bad-cert","event_key":"publish-b"}
+]

@@ -17,6 +17,9 @@ CREATE TABLE IF NOT EXISTS leases(id TEXT PRIMARY KEY,workload TEXT,digest TEXT,
 CREATE TABLE IF NOT EXISTS orphans(id TEXT PRIMARY KEY,environment TEXT,digest TEXT,status TEXT);
 CREATE TABLE IF NOT EXISTS revocations(id TEXT PRIMARY KEY,digest TEXT,generation INTEGER,status TEXT);
 CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY AUTOINCREMENT,subsystem TEXT,payload TEXT,result TEXT);
+CREATE TABLE IF NOT EXISTS clock_sources(id TEXT PRIMARY KEY,operator TEXT,offset_min INTEGER,offset_max INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS time_stamps(id TEXT PRIMARY KEY,event_key TEXT,source TEXT,local_at INTEGER,claimed_utc INTEGER);
+CREATE TABLE IF NOT EXISTS time_certificates(id TEXT PRIMARY KEY,event_key TEXT,certified_utc INTEGER,status TEXT);
 """
 
 def connect(path):
@@ -44,8 +47,8 @@ def rows(db,sql,args=()):
     return [dict(x) for x in db.execute(sql,args)]
 
 def execute(db,subsystem,payload):
-    from . import provenance,channel,admission
-    fn={'provenance':provenance.run,'channel':channel.run,'admission':admission.run}[subsystem]
+    from . import provenance,channel,admission,timeproof
+    fn={'provenance':provenance.run,'channel':channel.run,'admission':admission.run,'timeproof':timeproof.run}[subsystem]
     with tx(db):
         result=fn(db,payload)
         db.execute('INSERT INTO events(subsystem,payload,result) VALUES(?,?,?)',
