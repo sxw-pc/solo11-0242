@@ -1,0 +1,5 @@
+[
+  {"op":"meter","id":"meter-a","site":"site-a","period":"2026-11","kwh":100,"source":"grid","revision":1},
+  {"op":"build","id":"build-a","batch":"b1","digest":"sha256:aaa","site":"site-a","starts":1,"ends":5},
+  {"op":"claim","id":"claim-a","run":"build-a","reading":"meter-a","kwh":10}
+]

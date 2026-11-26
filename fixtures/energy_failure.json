@@ -1,0 +1,4 @@
+[
+  {"op":"meter","id":"bad-meter","site":"site-a","period":"2026-11","kwh":-1,"source":"grid","revision":1},
+  {"op":"claim","id":"bad-claim","run":"missing","reading":"meter-a","kwh":10}
+]
