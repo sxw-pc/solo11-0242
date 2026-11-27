@@ -22,6 +22,18 @@ CREATE TABLE IF NOT EXISTS water_samples(id TEXT PRIMARY KEY,loop TEXT,point TEX
 CREATE TABLE IF NOT EXISTS cooling_builds(id TEXT PRIMARY KEY,batch TEXT,loop TEXT,starts INTEGER,ends INTEGER);
 CREATE TABLE IF NOT EXISTS water_reports(id TEXT PRIMARY KEY,loop TEXT,period TEXT,volume INTEGER,status TEXT);
 CREATE TABLE IF NOT EXISTS valve_intents(id TEXT PRIMARY KEY,loop TEXT,position TEXT,at INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS discharge_permits(loop TEXT PRIMARY KEY,volume_limit INTEGER,start INTEGER,expires INTEGER,temp_limit INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS witnesses(id TEXT PRIMARY KEY,party TEXT,kind TEXT,accepted INTEGER);
+CREATE TABLE IF NOT EXISTS controller_generations(loop TEXT,generation INTEGER,started_at INTEGER,history_retained INTEGER,PRIMARY KEY(loop,generation));
+CREATE TABLE IF NOT EXISTS controller_receipts(id TEXT PRIMARY KEY,intent TEXT,loop TEXT,generation INTEGER,at INTEGER,kind TEXT,status TEXT);
+CREATE TABLE IF NOT EXISTS external_actions(id TEXT PRIMARY KEY,intent TEXT,loop TEXT,kind TEXT,position TEXT,generation INTEGER,permit_window TEXT,at INTEGER,witness TEXT,status TEXT);
+CREATE TABLE IF NOT EXISTS valve_readings(id TEXT PRIMARY KEY,loop TEXT,at INTEGER,position TEXT,witness TEXT,generation INTEGER);
+CREATE TABLE IF NOT EXISTS hydrology_observations(id TEXT PRIMARY KEY,loop TEXT,at INTEGER,point TEXT,level INTEGER,flow INTEGER,temperature INTEGER,witness TEXT);
+CREATE TABLE IF NOT EXISTS discharge_incidents(id TEXT PRIMARY KEY,loop TEXT,intent TEXT,at INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS discharge_adjudications(id TEXT PRIMARY KEY,loop TEXT,intent TEXT,at INTEGER,valve_state TEXT,verdict TEXT,discharged INTEGER,retained INTEGER,undeterminable TEXT,basis TEXT);
+CREATE TABLE IF NOT EXISTS recovery_actions(id TEXT PRIMARY KEY,loop TEXT,intent TEXT,incident TEXT,at INTEGER,path TEXT,batch TEXT,custodian TEXT,delivery_at INTEGER,transfer_manifest TEXT,isolation_witness TEXT,status TEXT);
+CREATE TABLE IF NOT EXISTS permit_meters(id TEXT PRIMARY KEY,loop TEXT,incident TEXT,at INTEGER,discharged INTEGER,volume_limit INTEGER,verdict TEXT);
+CREATE TABLE IF NOT EXISTS build_compliance(id TEXT PRIMARY KEY,batch TEXT,loop TEXT,at INTEGER,verdict TEXT,basis TEXT);
 """
 
 def connect(path):
