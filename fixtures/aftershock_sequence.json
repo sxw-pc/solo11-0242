@@ -1,0 +1,8 @@
+[
+  {"op": "zone", "id": "zone-z", "site": "site-a", "load_limit": 10, "revision": 1, "drawing_revision": "dwg-3"},
+  {"op": "element", "id": "beam-b7", "zone": "zone-z", "kind": "beam", "shared": true, "rated_limit": 10},
+  {"op": "sensor", "id": "accel-a", "location": "zone-z/grid-c3", "calibration": "cal-2026-01", "uncertainty": 0.15},
+  {"op": "sample", "id": "as1-sample", "zone": "zone-z", "sensor": "accel-a", "at": 200, "acceleration": 6, "aftershock_seq": 1},
+  {"op": "sample", "id": "as2-sample", "zone": "zone-z", "sensor": "accel-a", "at": 260, "acceleration": 7, "aftershock_seq": 2},
+  {"op": "aftershock", "id": "as2-ruling", "zone": "zone-z", "aftershock_seq": 2}
+]

@@ -1,0 +1,4 @@
+[
+  {"op": "zone", "id": "zone-y", "site": "site-a", "load_limit": 12, "revision": 1, "drawing_revision": "dwg-4"},
+  {"op": "element", "id": "slab-y2", "zone": "zone-y", "kind": "slab", "shared": false, "rated_limit": 12}
+]

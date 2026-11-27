@@ -1,0 +1,15 @@
+[
+  {"op": "zone", "id": "zone-z", "site": "site-a", "load_limit": 10, "revision": 1, "drawing_revision": "dwg-3"},
+  {"op": "element", "id": "beam-b7", "zone": "zone-z", "kind": "beam", "shared": true, "rated_limit": 10},
+  {"op": "rack", "id": "r1", "zone": "zone-z", "mass": 5, "function": "mirror", "element": "beam-b7", "anchor": "anchor-r1", "at": 10},
+  {"op": "rack", "id": "r2", "zone": "zone-z", "mass": 4, "function": "mirror", "element": "beam-b7", "anchor": "anchor-r2", "at": 11},
+  {"op": "mirror_service", "id": "svc-1", "rack": "r1"},
+  {"op": "mirror_service", "id": "svc-2", "rack": "r2"},
+  {"op": "sensor", "id": "accel-a", "location": "zone-z/grid-c3", "calibration": "cal-2026-01", "uncertainty": 0.15},
+  {"op": "sample", "id": "quake-main", "zone": "zone-z", "sensor": "accel-a", "at": 100, "acceleration": 8},
+  {"op": "inspect", "id": "inspect-peak", "zone": "zone-z", "engineer": "engineer-a", "at": 101, "threshold": 5},
+  {"op": "crack", "id": "crack-1", "zone": "zone-z", "engineer": "engineer-b", "at": 110, "location": "beam-b7/midspan", "measurement": "width=2.1mm", "severity": "major"},
+  {"op": "anchor_check", "rack": "r1", "displacement": 1.2, "limit": 2.0, "at": 115},
+  {"op": "anchor_check", "rack": "r2", "displacement": 3.4, "limit": 2.0, "at": 116},
+  {"op": "assess", "id": "assess-1", "zone": "zone-z", "engineer": "engineer-b", "at": 120, "drawing_revision": "dwg-3", "safe_load": 6, "basis": "crack_width_and_anchor_survey"}
+]

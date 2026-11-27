@@ -17,10 +17,22 @@ CREATE TABLE IF NOT EXISTS leases(id TEXT PRIMARY KEY,workload TEXT,digest TEXT,
 CREATE TABLE IF NOT EXISTS orphans(id TEXT PRIMARY KEY,environment TEXT,digest TEXT,status TEXT);
 CREATE TABLE IF NOT EXISTS revocations(id TEXT PRIMARY KEY,digest TEXT,generation INTEGER,status TEXT);
 CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY AUTOINCREMENT,subsystem TEXT,payload TEXT,result TEXT);
-CREATE TABLE IF NOT EXISTS structural_zones(id TEXT PRIMARY KEY,site TEXT,load_limit INTEGER,revision INTEGER,status TEXT);
-CREATE TABLE IF NOT EXISTS shaking_samples(id TEXT PRIMARY KEY,zone TEXT,sensor TEXT,at INTEGER,acceleration INTEGER);
+CREATE TABLE IF NOT EXISTS structural_zones(id TEXT PRIMARY KEY,site TEXT,load_limit INTEGER,revision INTEGER,status TEXT,drawing_revision TEXT);
+CREATE TABLE IF NOT EXISTS structural_elements(id TEXT PRIMARY KEY,zone TEXT,kind TEXT,shared INTEGER,rated_limit INTEGER,current_limit INTEGER,shoring_id TEXT);
+CREATE TABLE IF NOT EXISTS structural_sensors(id TEXT PRIMARY KEY,location TEXT,calibration TEXT,uncertainty REAL,status TEXT);
+CREATE TABLE IF NOT EXISTS shaking_samples(id TEXT PRIMARY KEY,zone TEXT,sensor TEXT,at INTEGER,acceleration INTEGER,aftershock_seq INTEGER);
 CREATE TABLE IF NOT EXISTS structural_inspections(id TEXT PRIMARY KEY,zone TEXT,engineer TEXT,at INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS field_evidence(id TEXT PRIMARY KEY,zone TEXT,kind TEXT,engineer TEXT,at INTEGER,location TEXT,measurement TEXT,severity TEXT);
+CREATE TABLE IF NOT EXISTS engineer_assessments(id TEXT PRIMARY KEY,zone TEXT,engineer TEXT,at INTEGER,drawing_revision TEXT,safe_load INTEGER,basis TEXT,status TEXT);
+CREATE TABLE IF NOT EXISTS shoring_works(id TEXT PRIMARY KEY,zone TEXT,element TEXT,engineer TEXT,completed_at INTEGER,measured_load INTEGER,monitoring_cycle INTEGER,status TEXT);
 CREATE TABLE IF NOT EXISTS site_racks(id TEXT PRIMARY KEY,zone TEXT,mass INTEGER,function TEXT,status TEXT);
+CREATE TABLE IF NOT EXISTS rack_anchors(id TEXT PRIMARY KEY,rack TEXT,element TEXT,installed_at INTEGER,displacement REAL,checked_at INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS rack_relocations(id TEXT PRIMARY KEY,rack TEXT,from_zone TEXT,to_zone TEXT,engineer TEXT,at INTEGER,verified_at INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS mirror_services(id TEXT PRIMARY KEY,rack TEXT,function TEXT,status TEXT);
+CREATE TABLE IF NOT EXISTS mirror_switchovers(id TEXT PRIMARY KEY,service TEXT,from_rack TEXT,to_rack TEXT,at INTEGER,check_ref TEXT,status TEXT);
+CREATE TABLE IF NOT EXISTS service_restorations(id TEXT PRIMARY KEY,service TEXT,rack TEXT,at INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS reentry_certificates(id TEXT PRIMARY KEY,zone TEXT,engineer TEXT,assessment TEXT,at INTEGER,strategy TEXT,accessible INTEGER,occupant_limit INTEGER,retained_racks TEXT,removed_racks TEXT,deload_deadline INTEGER,monitoring_cycle INTEGER,aftershock_seq INTEGER,void_reason TEXT,status TEXT);
+CREATE TABLE IF NOT EXISTS structural_notices(id TEXT PRIMARY KEY,recipient TEXT,zone TEXT,engineer TEXT,at INTEGER,supersedes TEXT,subject TEXT,body TEXT,status TEXT);
 """
 
 def connect(path):
