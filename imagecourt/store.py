@@ -20,6 +20,17 @@ CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY AUTOINCREMENT,subsyste
 CREATE TABLE IF NOT EXISTS electricity_readings(id TEXT PRIMARY KEY,site TEXT,period TEXT,kwh INTEGER,source TEXT,revision INTEGER);
 CREATE TABLE IF NOT EXISTS build_energy_runs(id TEXT PRIMARY KEY,batch TEXT,digest TEXT,site TEXT,starts INTEGER,ends INTEGER);
 CREATE TABLE IF NOT EXISTS green_claims(id TEXT PRIMARY KEY,run TEXT,reading TEXT,kwh INTEGER,state TEXT);
+CREATE TABLE IF NOT EXISTS meter_devices(id TEXT PRIMARY KEY,site TEXT,region TEXT,model TEXT,calibration_id TEXT,calibration_at INTEGER,calibration_until INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS meter_readings(id TEXT PRIMARY KEY,device TEXT,site TEXT,window_start INTEGER,window_end INTEGER,kwh INTEGER,low_carbon_kwh INTEGER,evidence TEXT,revision INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS energy_runs(id TEXT PRIMARY KEY,batch TEXT,digest TEXT,site TEXT,region TEXT,customer TEXT,state TEXT,starts INTEGER,ends INTEGER,measured_kwh INTEGER,low_carbon_kwh INTEGER);
+CREATE TABLE IF NOT EXISTS build_segments(id TEXT PRIMARY KEY,run TEXT,seq INTEGER,kind TEXT,starts INTEGER,ends INTEGER,kwh INTEGER);
+CREATE TABLE IF NOT EXISTS energy_allocations(id TEXT PRIMARY KEY,run TEXT,reading TEXT,site TEXT,kwh INTEGER);
+CREATE TABLE IF NOT EXISTS green_certificates(serial TEXT PRIMARY KEY,station TEXT,region TEXT,period_start INTEGER,period_end INTEGER,initial_owner TEXT,current_owner TEXT,kwh INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS certificate_transfers(id TEXT PRIMARY KEY,serial TEXT,sender TEXT,receiver TEXT,kwh INTEGER,at INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS certificate_retirements(id TEXT PRIMARY KEY,serial TEXT,run TEXT,kwh INTEGER,at INTEGER,receipt TEXT,status TEXT);
+CREATE TABLE IF NOT EXISTS green_claim_versions(id TEXT PRIMARY KEY,claim TEXT,version INTEGER,run TEXT,customer TEXT,basis TEXT,physical_kwh INTEGER,certificate_kwh INTEGER,reading TEXT,state TEXT,superseded_by TEXT,UNIQUE(claim,version));
+CREATE TABLE IF NOT EXISTS claim_certificates(claim TEXT,version INTEGER,retirement TEXT,kwh INTEGER,PRIMARY KEY(claim,version,retirement));
+CREATE TABLE IF NOT EXISTS claim_impacts(id TEXT PRIMARY KEY,claim TEXT,version INTEGER,reason TEXT,at INTEGER,detail TEXT);
 """
 
 def connect(path):

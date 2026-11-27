@@ -1,0 +1,9 @@
+[
+  {"op": "cert_issue", "serial": "cert-1", "station": "wind-park-1",
+   "region": "region-east", "period_start": 0, "period_end": 120,
+   "initial_owner": "platform", "kwh": 30, "at": 5},
+  {"op": "cert_transfer", "id": "transfer-1", "serial": "cert-1",
+   "frm": "platform", "to": "green-supplier", "kwh": 30, "at": 10},
+  {"op": "cert_transfer", "id": "transfer-2", "serial": "cert-1",
+   "frm": "green-supplier", "to": "platform", "kwh": 30, "at": 20}
+]

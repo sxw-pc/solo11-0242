@@ -1,0 +1,11 @@
+[
+  {"op": "meter_reading", "id": "ghost-reading", "device": "meter-missing",
+   "site": "site-a", "window_start": 0, "window_end": 10, "kwh": 10,
+   "low_carbon_kwh": 0, "evidence": null, "revision": 1, "at": 10},
+  {"op": "cert_retire", "id": "retire-missing", "serial": "cert-missing",
+   "run": "run-missing", "owner": "platform", "kwh": 5, "at": 30,
+   "receipt": "receipt-missing"},
+  {"op": "claim_green", "id": "claim-missing", "run": "run-missing",
+   "customer": "customer-a", "basis": "grid_source", "physical_kwh": 5,
+   "certificate_kwh": 0, "at": 40}
+]

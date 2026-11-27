@@ -1,0 +1,12 @@
+[
+  {"op": "meter_device", "id": "meter-a", "site": "site-a", "region": "region-east",
+   "model": "trusted-meter-9", "calibration_id": "cal-1", "calibration_at": 0,
+   "calibration_until": 1000, "at": 0},
+  {"op": "meter_reading", "id": "reading-1", "device": "meter-a", "site": "site-a",
+   "window_start": 0, "window_end": 60, "kwh": 60, "low_carbon_kwh": 12,
+   "evidence": "grid-attribution-letter-1", "revision": 1, "at": 60},
+  {"op": "meter_reading", "id": "reading-2", "device": "meter-a", "site": "site-a",
+   "window_start": 60, "window_end": 120, "kwh": 40, "low_carbon_kwh": 8,
+   "evidence": "grid-attribution-letter-2", "predecessor": "reading-1",
+   "revision": 1, "at": 120}
+]
