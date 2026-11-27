@@ -1,0 +1,40 @@
+[
+  {"subsystem":"provenance","op":"scope","signer":"builder-a","source":"repo-a"},
+  {"subsystem":"provenance","op":"manifest","digest":"sha256:d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0","tag":"image-d:1","batch":"batch-d","generation":1},
+  {"subsystem":"provenance","op":"attest","id":"att-d","digest":"sha256:d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0","batch":"batch-d","signer":"builder-a","source":"repo-a","recipe":"recipe-d","expected_recipe":"recipe-d","generation":1},
+  {"subsystem":"provenance","op":"sbom","digest":"sha256:d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0","components":["lib-a","lib-b"],"revision":1},
+
+  {"subsystem":"channel","op":"propose","id":"p-dev-d","digest":"sha256:d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0","environment":"dev","at":10},
+  {"subsystem":"channel","op":"publish","id":"p-dev-d","at":11},
+  {"subsystem":"channel","op":"propose","id":"p-stage-d","digest":"sha256:d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0","environment":"stage","parent_environment":"dev","at":12},
+  {"subsystem":"channel","op":"publish","id":"p-stage-d","at":13},
+
+  {"subsystem":"admission","op":"workload","id":"workload-d-old","environment":"stage","digest":"sha256:d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0","generation":1},
+  {"subsystem":"admission","op":"admit","id":"lease-d-old","workload":"workload-d-old","generation":1,"channel_generation":1,"at":14,"expires":1900000000},
+
+  {"subsystem":"retention","op":"court_signer","id":"signer-judicial-1","signer":"judge.a@court.example","authority":"D0 District Court","at":1},
+  {"subsystem":"retention","op":"escrow","id":"escrow-court","custodian":"Independent Judicial Escrow Authority","endpoint":"external://court-escrow.example","reachable":true,"at":1},
+
+  {"subsystem":"retention","op":"copy","id":"copy-d-site1","digest":"sha256:d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0","tenant":"customer-a","site":"site-hz-1",
+   "segments":[
+     {"id":"seg-sample-1","category":"test_samples","text":"D0-SAMPLE-ALPHA SECRET-SAMPLE-ALPHA-7f3a9c21 synthetic cheek-cell labels "},
+     {"id":"seg-trace","category":"incident_trace","text":"D0-TRACE <<COURT-TRACE-D0-accident-diagnostic>> minimal incident trajectory 0123456789 "},
+     {"id":"seg-sample-2","category":"test_samples","text":"D0-SAMPLE-BETA SECRET-SAMPLE-BETA-9b2c4e77 synthetic regression corpus tail"}
+   ]},
+  {"subsystem":"retention","op":"copy","id":"copy-d-site2","digest":"sha256:d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0","tenant":"customer-a","site":"site-sg-2",
+   "segments":[
+     {"id":"seg-sample-1","category":"test_samples","text":"D0-SAMPLE-ALPHA SECRET-SAMPLE-ALPHA-7f3a9c21 synthetic cheek-cell labels "},
+     {"id":"seg-trace","category":"incident_trace","text":"D0-TRACE <<COURT-TRACE-D0-accident-diagnostic>> minimal incident trajectory 0123456789 "},
+     {"id":"seg-sample-2","category":"test_samples","text":"D0-SAMPLE-BETA SECRET-SAMPLE-BETA-9b2c4e77 synthetic regression corpus tail"}
+   ]},
+
+  {"subsystem":"retention","op":"copy","id":"copy-b-site1","digest":"sha256:d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0","tenant":"customer-b","site":"site-hz-1","payload":"TENANT-B-LAWFUL same digest other customer copy LAWFUL-B-55667788"},
+
+  {"subsystem":"retention","op":"cache","id":"cache-d-site1","digest":"sha256:d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0","tenant":"customer-a","site":"site-hz-1","copy_id":"copy-d-site1"},
+  {"subsystem":"retention","op":"cache","id":"cache-d-site2","digest":"sha256:d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0","tenant":"customer-a","site":"site-sg-2","copy_id":"copy-d-site2"},
+
+  {"subsystem":"retention","op":"runtime","id":"runtime-d-old-lease","digest":"sha256:d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0","tenant":"customer-a","site":"node-orbstack-1","lease_id":"lease-d-old","copy_id":"copy-d-site1"},
+
+  {"subsystem":"retention","op":"backup","id":"backup-d-region1","digest":"sha256:d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0","tenant":"customer-a","site":"backup-region-hz","copy_id":"copy-d-site1"},
+  {"subsystem":"retention","op":"backup","id":"backup-d-region2","digest":"sha256:d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0","tenant":"customer-a","site":"backup-region-sg","copy_id":"copy-d-site2"}
+]
