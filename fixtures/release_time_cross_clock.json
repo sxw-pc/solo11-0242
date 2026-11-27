@@ -1,0 +1,101 @@
+{
+  "schema": "release-time-proof-fixture/v1",
+  "case": "image-D-cross-clock-shared-upstream",
+  "title": "Production image D: self-reported minute 29 against a minute-30 close",
+  "description": "The publish command self-reports minute 29 and channel.py accepts it because 29 < 30. The node clock carries +/-3 minutes and the signing device +/-2 minutes, and the two may share one mis-set upstream source. Their bounded UTC intervals therefore straddle the close at minute 30: [26,32] and [27,31], intersecting to [27,31]. The boundary cannot be decided, so the formal certificate must be time_unproven. events.seq proves only local commit order (proposal seq 18 before publish seq 21), never UTC compliance.",
+  "release": {
+    "release_ref": "D",
+    "digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "generation": 4
+  },
+  "window": {
+    "environment": "prod",
+    "start": 20,
+    "expires": 30,
+    "generation": 7,
+    "boundary": "half-open [start, expires), matching imagecourt/channel.py"
+  },
+  "commit_order": [
+    {"event_key": "propose-D", "seq": 18},
+    {"event_key": "publish-D", "seq": 21}
+  ],
+  "events": [
+    {
+      "seq": 18,
+      "event_key": "propose-D",
+      "subsystem": "channel",
+      "payload": {"op": "propose", "id": "p-d-prod", "digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd", "environment": "prod", "parent_environment": "stage", "at": 24}
+    },
+    {
+      "seq": 21,
+      "event_key": "publish-D",
+      "subsystem": "channel",
+      "payload": {"op": "publish", "id": "p-d-prod", "at": 29}
+    }
+  ],
+  "naive_channel_view": {
+    "propose_at_self_reported": 24,
+    "publish_at_self_reported": 29,
+    "window_expires": 30,
+    "channel_py_decision": "published",
+    "why_false": "Taking min(claimed_utc)=29 as a definite UTC instant ignores each clock's error interval and the correlated upstream."
+  },
+  "upstreams": [
+    {
+      "id": "upstream-metro-x",
+      "operator": "metro-time-exchange",
+      "offset_min": -4,
+      "offset_max": 4,
+      "role": "possible common upstream of node and signing device; correlation group only while witness bounds are already total/absolute"
+    }
+  ],
+  "witnesses": [
+    {
+      "id": "w-node-d",
+      "kind": "node",
+      "operator": "platform-node-a",
+      "witness_seq": "WS-NODE-D-000731",
+      "signing_chain": ["node-a-attestation-key-7", "platform-node-ca-2026", "offline-root-ca"],
+      "calibration_start": 18,
+      "calibration_end": 78,
+      "offset_min": -3,
+      "offset_max": 3,
+      "upstream_group": "upstream-metro-x",
+      "absolute": true
+    },
+    {
+      "id": "w-signer-d",
+      "kind": "signer",
+      "operator": "release-signing-device-2",
+      "witness_seq": "WS-SIGNER-D-002044",
+      "signing_chain": ["hsm-key-release-2", "release-signer-ca-2026", "offline-root-ca"],
+      "calibration_start": 16,
+      "calibration_end": 76,
+      "offset_min": -2,
+      "offset_max": 2,
+      "upstream_group": "upstream-metro-x",
+      "absolute": true
+    }
+  ],
+  "stamps": [
+    {"id": "ts-propose-node-d", "event_key": "propose-D", "source": "w-node-d", "local_at": 24, "claimed_utc": 24},
+    {"id": "ts-propose-signer-d", "event_key": "propose-D", "source": "w-signer-d", "local_at": 24, "claimed_utc": 24},
+    {"id": "ts-publish-node-d", "event_key": "publish-D", "source": "w-node-d", "local_at": 29, "claimed_utc": 29},
+    {"id": "ts-publish-signer-d", "event_key": "publish-D", "source": "w-signer-d", "local_at": 29, "claimed_utc": 29}
+  ],
+  "expected": {
+    "node_publish_interval": [26, 32],
+    "signer_publish_interval": [27, 31],
+    "propose_interval": [22, 26],
+    "publish_interval": [27, 31],
+    "seq_order": "propose_before_publish",
+    "interval_order": "propose_before_publish",
+    "publish_window_verdict": "insufficient_evidence",
+    "formal_certificate_status": "time_unproven",
+    "production_window_met": null,
+    "independence_groups": 1,
+    "fully_independent": false,
+    "shared_upstream": true,
+    "minimum_claimed_utc_trap": 29
+  }
+}

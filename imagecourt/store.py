@@ -17,9 +17,34 @@ CREATE TABLE IF NOT EXISTS leases(id TEXT PRIMARY KEY,workload TEXT,digest TEXT,
 CREATE TABLE IF NOT EXISTS orphans(id TEXT PRIMARY KEY,environment TEXT,digest TEXT,status TEXT);
 CREATE TABLE IF NOT EXISTS revocations(id TEXT PRIMARY KEY,digest TEXT,generation INTEGER,status TEXT);
 CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY AUTOINCREMENT,subsystem TEXT,payload TEXT,result TEXT);
-CREATE TABLE IF NOT EXISTS clock_sources(id TEXT PRIMARY KEY,operator TEXT,offset_min INTEGER,offset_max INTEGER,status TEXT);
-CREATE TABLE IF NOT EXISTS time_stamps(id TEXT PRIMARY KEY,event_key TEXT,source TEXT,local_at INTEGER,claimed_utc INTEGER);
-CREATE TABLE IF NOT EXISTS time_certificates(id TEXT PRIMARY KEY,event_key TEXT,certified_utc INTEGER,status TEXT);
+CREATE TABLE IF NOT EXISTS clock_sources(
+  id TEXT PRIMARY KEY,operator TEXT,offset_min INTEGER,offset_max INTEGER,status TEXT,
+  kind TEXT DEFAULT 'unspecified',signing_chain TEXT,calibration_start INTEGER,calibration_end INTEGER,
+  witness_seq TEXT UNIQUE,upstream_group TEXT,absolute INTEGER NOT NULL DEFAULT 1,
+  registered_at INTEGER,clock_version INTEGER NOT NULL DEFAULT 1,complete INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE IF NOT EXISTS clock_calibrations(
+  id TEXT PRIMARY KEY,source TEXT NOT NULL,version INTEGER NOT NULL,
+  offset_min INTEGER,offset_max INTEGER,calibration_start INTEGER,calibration_end INTEGER,
+  absolute INTEGER NOT NULL DEFAULT 1,upstream_group TEXT,reason TEXT,recorded_at INTEGER,
+  supersedes INTEGER,UNIQUE(source,version));
+CREATE TABLE IF NOT EXISTS time_stamps(
+  id TEXT PRIMARY KEY,event_key TEXT,source TEXT,local_at INTEGER,claimed_utc INTEGER,
+  original_digest TEXT,calibration_version INTEGER,backfill INTEGER NOT NULL DEFAULT 0,
+  received_at INTEGER,rollback INTEGER NOT NULL DEFAULT 0,rollback_reason TEXT);
+CREATE TABLE IF NOT EXISTS clock_anomalies(
+  id TEXT PRIMARY KEY,source TEXT,kind TEXT,stamp TEXT,detail TEXT,recorded_seq INTEGER);
+CREATE TABLE IF NOT EXISTS time_certificates(
+  id TEXT PRIMARY KEY,event_key TEXT,certified_utc INTEGER,status TEXT,
+  scope TEXT NOT NULL DEFAULT 'provisional',image_digest TEXT,generation INTEGER,release_ref TEXT,
+  propose_seq INTEGER,publish_seq INTEGER,propose_event_key TEXT,publish_event_key TEXT,
+  propose_event_digest TEXT,publish_event_digest TEXT,events_digest TEXT,clock_version TEXT,
+  interval_low INTEGER,interval_high INTEGER,verdict TEXT,independence TEXT,report TEXT,
+  window_start INTEGER,window_expires INTEGER,window_generation INTEGER,issued_at INTEGER);
+CREATE TABLE IF NOT EXISTS time_certificate_corrections(
+  id TEXT UNIQUE,certificate_id TEXT NOT NULL,revision INTEGER NOT NULL,
+  kind TEXT,reason TEXT,recorded_at INTEGER,clock_version TEXT,verdict TEXT,
+  interval_low INTEGER,interval_high INTEGER,report TEXT,
+  PRIMARY KEY(certificate_id,revision));
 """
 
 def connect(path):
