@@ -21,7 +21,22 @@ CREATE TABLE IF NOT EXISTS rack_feeds(rack TEXT,feed TEXT,breaker TEXT,PRIMARY K
 CREATE TABLE IF NOT EXISTS rack_workloads(rack TEXT,workload TEXT,PRIMARY KEY(rack,workload));
 CREATE TABLE IF NOT EXISTS breaker_commands(id TEXT PRIMARY KEY,breaker TEXT,action TEXT,ack TEXT);
 CREATE TABLE IF NOT EXISTS voltage_samples(id TEXT PRIMARY KEY,breaker TEXT,source TEXT,volts INTEGER,at INTEGER);
-CREATE TABLE IF NOT EXISTS electrical_permits(id TEXT PRIMARY KEY,rack TEXT,status TEXT,issued_at INTEGER);
+CREATE TABLE IF NOT EXISTS electrical_permits(id TEXT PRIMARY KEY,rack TEXT,status TEXT,issued_at INTEGER,scope TEXT,disposition TEXT,evidence TEXT,supersedes TEXT,revoked_at INTEGER,revoke_reason TEXT);
+CREATE TABLE IF NOT EXISTS racks(id TEXT PRIMARY KEY,generation INTEGER,standby_for TEXT);
+CREATE TABLE IF NOT EXISTS backfeed_paths(id TEXT PRIMARY KEY,rack TEXT,breaker TEXT,label TEXT,state TEXT,cleared_at INTEGER);
+CREATE TABLE IF NOT EXISTS repair_parts(serial TEXT PRIMARY KEY,rack TEXT,position TEXT,state TEXT);
+CREATE TABLE IF NOT EXISTS repair_windows(rack TEXT PRIMARY KEY,start INTEGER,expires INTEGER,generation INTEGER);
+CREATE TABLE IF NOT EXISTS switch_commands(id TEXT PRIMARY KEY,rack TEXT,breaker TEXT,action TEXT,state TEXT,at INTEGER,reason TEXT);
+CREATE TABLE IF NOT EXISTS switch_positions(id TEXT PRIMARY KEY,breaker TEXT,position TEXT,source TEXT,trusted INTEGER,at INTEGER);
+CREATE TABLE IF NOT EXISTS lockouts(id TEXT PRIMARY KEY,rack TEXT,breaker TEXT,technician TEXT,state TEXT,at INTEGER);
+CREATE TABLE IF NOT EXISTS probe_calibrations(probe TEXT,calibrated_at INTEGER,valid_until INTEGER,generation INTEGER,PRIMARY KEY(probe,generation));
+CREATE TABLE IF NOT EXISTS permit_events(seq INTEGER PRIMARY KEY AUTOINCREMENT,permit_id TEXT,event TEXT,at INTEGER,detail TEXT);
+CREATE TABLE IF NOT EXISTS field_entries(id TEXT PRIMARY KEY,permit_id TEXT,rack TEXT,technician TEXT,state TEXT,at INTEGER);
+CREATE TABLE IF NOT EXISTS workload_migrations(id TEXT PRIMARY KEY,workload TEXT,source_rack TEXT,target_rack TEXT,state TEXT,at INTEGER,evidence TEXT);
+CREATE TABLE IF NOT EXISTS build_outputs(id TEXT PRIMARY KEY,workload TEXT,rack TEXT,digest TEXT,seq INTEGER,state TEXT,at INTEGER);
+CREATE TABLE IF NOT EXISTS service_decisions(id TEXT PRIMARY KEY,lease_id TEXT,workload TEXT,kind TEXT,responsibility TEXT,at INTEGER,deadline_loss INTEGER,detail TEXT);
+CREATE TABLE IF NOT EXISTS customer_notices(id TEXT PRIMARY KEY,lease_id TEXT,kind TEXT,state TEXT,at INTEGER,detail TEXT,supersedes TEXT);
+CREATE TABLE IF NOT EXISTS repair_acceptances(rack TEXT PRIMARY KEY,at INTEGER,permit_id TEXT,detail TEXT);
 """
 
 def connect(path):
